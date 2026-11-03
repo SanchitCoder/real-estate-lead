@@ -1,0 +1,120 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Skyline palette: warm paper, deep ink, a single confident green. Status colours are never the only signal. */
+:root {
+  --bg: #f6f2ea;
+  --surface: #fdfbf7;
+  --surface-2: #f0ebe0;
+  --ink: #1b1a16;
+  --ink-2: #3d3a33;
+  --muted: #615d52;
+  --line: #e0d9ca;
+  --line-strong: #cfc6b3;
+  --brand: #1d5846;
+  --brand-2: #2b7a62;
+  --brand-ink: #ffffff;
+  --brand-soft: #dcebe4;
+  --good: #25724a;
+  --good-soft: #dcefe3;
+  --warn: #8f5a08;
+  --warn-soft: #f8e7c4;
+  --bad: #a92f25;
+  --bad-soft: #f8dcd7;
+  --hot: #a92f25;
+  --warm: #8f5a08;
+  --cold: #34607d;
+  --c1: #1d5846; --c2: #b9442f; --c3: #36559e; --c4: #8c6a2c; --c5: #6a4a93; --c6: #4a8a96; --c7: #7a7a6a; --c8: #a0a0a0;
+  --radius: 14px;
+  --shadow: 0 1px 0 rgb(0 0 0 / 0.03), 0 8px 24px -12px rgb(60 50 20 / 0.18);
+}
+.dark {
+  --bg: #12110d;
+  --surface: #1a1914;
+  --surface-2: #232119;
+  --ink: #f3eee3;
+  --ink-2: #d6d0c2;
+  --muted: #a8a293;
+  --line: #2c2a22;
+  --line-strong: #3d3a2f;
+  --brand: #6fc4a3;
+  --brand-2: #8ad8b8;
+  --brand-ink: #0c1a14;
+  --brand-soft: #1f3a30;
+  --good: #6fcf9a;
+  --good-soft: #1b3326;
+  --warn: #efb957;
+  --warn-soft: #3a2d12;
+  --bad: #ff8e80;
+  --bad-soft: #43201b;
+  --hot: #ff8e80;
+  --warm: #efb957;
+  --cold: #8fbad6;
+  --c1: #6fc4a3; --c2: #ef8a76; --c3: #8ba6ee; --c4: #d7b26a; --c5: #b79be0; --c6: #7fc6d2; --c7: #b0b09e; --c8: #c8c8c8;
+  --shadow: 0 1px 0 rgb(255 255 255 / 0.02), 0 10px 28px -14px rgb(0 0 0 / 0.7);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-brand: var(--brand);
+  --color-brand-2: var(--brand-2);
+  --color-brand-ink: var(--brand-ink);
+  --color-brand-soft: var(--brand-soft);
+  --color-good: var(--good);
+  --color-good-soft: var(--good-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-bad: var(--bad);
+  --color-bad-soft: var(--bad-soft);
+  --color-hot: var(--hot);
+  --color-warm: var(--warm);
+  --color-cold: var(--cold);
+  --font-display: var(--font-fraunces), Georgia, serif;
+  --font-sans: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plexmono), ui-monospace, monospace;
+  --radius-card: var(--radius);
+}
+
+html { color-scheme: light; }
+html.dark { color-scheme: dark; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-feature-settings: 'ss01', 'cv11';
+  -webkit-font-smoothing: antialiased;
+  /* faint paper grain */
+  background-image: radial-gradient(1200px 500px at 85% -10%, color-mix(in oklab, var(--brand) 7%, transparent), transparent 60%),
+    radial-gradient(900px 400px at -10% 110%, color-mix(in oklab, var(--c4) 6%, transparent), transparent 60%);
+  background-attachment: fixed;
+}
+.font-display { font-family: var(--font-display); font-optical-sizing: auto; letter-spacing: -0.01em; }
+.tnum { font-variant-numeric: tabular-nums; }
+:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; border-radius: 6px; }
+
+/* the red rail pulses when a new stale lead appears */
+@keyframes rail-pulse {
+  0% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--bad) 45%, transparent); }
+  70% { box-shadow: 0 0 0 14px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+.rail-pulse { animation: rail-pulse 1.6s ease-out 3; }
+@keyframes shimmer { to { background-position: -200% 0; } }
+.skeleton {
+  background: linear-gradient(100deg, var(--surface-2) 30%, color-mix(in oklab, var(--surface-2) 60%, var(--surface)) 50%, var(--surface-2) 70%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+  border-radius: 8px;
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+}
+.scroll-thin { scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom); }

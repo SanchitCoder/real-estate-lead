@@ -1,0 +1,40 @@
+/** Plain-language names and units for the backend's config keys. Unknown keys fall back to the backend's own description. */
+export interface ConfigLabel { label: string; unit?: string; group: string; format?: (v: any) => string }
+const min = (v: number) => (v >= 60 ? `${Math.floor(v / 60)}h${v % 60 ? ` ${v % 60}m` : ''}` : `${v} min`);
+export const CONFIG_LABELS: Record<string, ConfigLabel> = {
+  sla_first_response_min: { label: 'Reply target', group: 'Speed to lead', format: (v) => `Agent must contact a new lead within ${min(v)}` },
+  escalate_owner_min: { label: 'Alert the owner after', group: 'Speed to lead', format: (v) => `${min(v)} with no reply` },
+  reassign_min: { label: 'Move to another agent after', group: 'Speed to lead', format: (v) => `${min(v)} with no reply` },
+  max_reassignments: { label: 'Stop reassigning after', group: 'Speed to lead', format: (v) => `${v} moves` },
+  stale_days_hot: { label: 'Hot lead goes stale after', group: 'Staying in touch', format: (v) => `${v} day${v === 1 ? '' : 's'} of silence` },
+  stale_days_warm: { label: 'Warm lead goes stale after', group: 'Staying in touch', format: (v) => `${v} days of silence` },
+  stale_days_cold: { label: 'Cold lead goes stale after', group: 'Staying in touch', format: (v) => `${v} days of silence` },
+  score_hot_min: { label: 'Hot lead starts at', group: 'Lead scoring', format: (v) => `${v} / 100 points` },
+  score_warm_min: { label: 'Warm lead starts at', group: 'Lead scoring', format: (v) => `${v} / 100 points` },
+  score_weight_budget_fit: { label: 'Points for a realistic budget', group: 'Lead scoring', format: (v) => `up to ${v}` },
+  score_weight_timeline: { label: 'Points for buying soon', group: 'Lead scoring', format: (v) => `up to ${v}` },
+  score_weight_specificity: { label: 'Points for a clear requirement', group: 'Lead scoring', format: (v) => `up to ${v}` },
+  score_weight_source_quality: { label: 'Points for a good source', group: 'Lead scoring', format: (v) => `up to ${v}` },
+  score_weight_repeat_enquiry: { label: 'Points for enquiring again', group: 'Lead scoring', format: (v) => `up to ${v}` },
+  match_tolerance_pct: { label: 'Budget flexibility when matching', group: 'Listing matching', format: (v) => `±${v}% of the buyer's budget` },
+  match_threshold: { label: 'Message a buyer when the match is at least', group: 'Listing matching', format: (v) => `${v}%` },
+  match_hot_score: { label: 'Alert the agent too when the match is at least', group: 'Listing matching', format: (v) => `${v}%` },
+  match_max_per_listing: { label: 'Most buyers messaged per listing per run', group: 'Listing matching', format: (v) => `${v}` },
+  match_weight_location: { label: 'Match weight: area', group: 'Listing matching', format: (v) => `${v} points` },
+  match_weight_property_type: { label: 'Match weight: property type', group: 'Listing matching', format: (v) => `${v} points` },
+  match_weight_bhk: { label: 'Match weight: BHK', group: 'Listing matching', format: (v) => `${v} points` },
+  match_weight_budget: { label: 'Match weight: budget', group: 'Listing matching', format: (v) => `${v} points` },
+  consider_cut_multiplier: { label: '“Consider cutting” rule', group: 'Money', format: (v) => `A paid source costing more than ${v}× the best paid source per site visit` },
+  visit_reminder_minutes: { label: 'Site-visit reminder', group: 'Site visits', format: (v) => `${min(v)} before the visit` },
+  visit_duration_min: { label: 'Calendar slot for a visit', group: 'Site visits', format: (v) => min(v) },
+  digest_hour_ist: { label: 'Daily digest time', group: 'Reports', format: (v) => `${v % 12 || 12}:00 ${v < 12 ? 'am' : 'pm'} IST` },
+  metrics_window_days: { label: 'Rolling window for reports', group: 'Reports', format: (v) => `last ${v} days` },
+  owner_phone: { label: 'Owner WhatsApp', group: 'People', format: (v) => maskTail(String(v)) },
+  owner_email: { label: 'Owner email', group: 'People' },
+  admin_phone: { label: 'Admin WhatsApp (error alerts)', group: 'People', format: (v) => maskTail(String(v)) },
+  admin_email: { label: 'Admin email (error alerts)', group: 'People' },
+  company_name: { label: 'Company name in messages', group: 'People' },
+  google_calendar_id: { label: 'Calendar for site visits', group: 'Site visits' },
+};
+function maskTail(p: string) { const d = p.replace(/\D/g, ''); return d.length >= 10 ? `+91 ${d.slice(-10, -8)}••• ••${d.slice(-3)}` : p; }
+export const labelFor = (key: string): ConfigLabel => CONFIG_LABELS[key] ?? { label: key.replace(/_/g, ' '), group: 'Other' };
